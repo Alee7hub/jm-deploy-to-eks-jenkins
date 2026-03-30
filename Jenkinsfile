@@ -3,6 +3,10 @@ pipeline {
     tools {
         maven 'maven-3.9'
     }
+    environment {
+        DOCKER_REPO_SERVER = '320806842529.dkr.ecr.eu-central-1.amazonaws.com'
+        DOCKER_REPO_NAME = "${DOCKER_REPO_SERVER}/java-maven-app"
+    }
     stages {
         stage('increment version') {
             steps {
@@ -13,7 +17,7 @@ pipeline {
                         versions:commit'
                     def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
                     def version = matcher[0][1]
-                    env.IMAGE_NAME = "alikakavand/demo-app:$version-$BUILD_NUMBER"
+                    env.IMAGE_VERSION = "alikakavand/demo-app:$version-$BUILD_NUMBER"
                 }
             }
         }
@@ -29,10 +33,10 @@ pipeline {
             steps {
                 script {
                     echo "building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]){
-                        sh "docker build -t ${IMAGE_NAME} ."
+                    withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+                        sh "docker build -t ${DOCKER_REPO_NAME}:${IMAGE_VERSION} ."
                         sh 'echo $PASS | docker login -u $USER --password-stdin ${DOCKER_REPO_SERVER}'
-                        sh "docker push ${IMAGE_NAME}"
+                        sh "docker push ${DOCKER_REPO_NAME}:${IMAGE_VERSION}"
                     }
                 }
             }

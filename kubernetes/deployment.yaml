@@ -15,10 +15,10 @@ spec:
         app: $APP_NAME
     spec:
       imagePullSecrets:
-        - name: my-dockerhub-key
+        - name: aws-registry-key # my-dockerhub-key
       containers:
         - name: $APP_NAME
-          image: $IMAGE_NAME
+          image: $DOCKER_REPO_NAME:$IMAGE_VERSION
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
