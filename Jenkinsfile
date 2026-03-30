@@ -54,7 +54,7 @@ pipeline {
         stage('commit version update'){
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github-pat', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+                    withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]){
                         sh 'git config --global user.email "jenkins@example.com"'
                         sh 'git config --global user.name "Jenkins"'
                         sh 'git remote set-url origin https://$USER:$PASS@github.com/Alee7hub/jm-deploy-to-eks-jenkins.git'
